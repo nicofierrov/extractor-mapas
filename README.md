@@ -1,27 +1,334 @@
-# extractor-mapas
+# 🗺️ Extractor-Mapas
 
 ## English
 
-### Demo Version
-The final version of this tool is not public.
+### Introduction
 
-### About the Tool
-This tool was developed to automate the extraction of geospatial information from flat PDFs *generated* and sent by the Dirección de Obras Hidráulicas (DOH). It identifies service areas for Rural Sanitation Services (Servicios Sanitarios Rurales - SSR), tanks, and other system elements.
+**Extractor-Mapas** is an automated tool designed to extract geospatial information from flat PDF maps using Optical Character Recognition (OCR) and computer vision techniques. This tool was specifically developed to process maps generated and distributed by the Dirección de Obras Hidráulicas (DOH) for Rural Sanitation Services (Servicios Sanitarios Rurales - SSR) in Chile.
 
-The tool locates the table of vertices (or points) and performs OCR in the area if necessary. This is because the PDF files are partially digitized. Additionally, it looks for the projection within the files—often hidden from the naked eye (e.g., written in white letters on a white background). Generally, the WGS1984 UTM18S projection is used for the Isla Grande de Chiloé, but due to inconsistencies in the data, each case must be verified individually.
+#### Key Features
 
-These flat PDFs were generated in QGIS and sent by the DOH.
+- 🔍 **Automated Coordinate Extraction**: Uses OCR technology to detect and extract UTM coordinate tables from PDF documents and images
+- 🖼️ **Image Processing**: Converts PDFs to images and applies advanced preprocessing for optimal text recognition
+- 📊 **Data Structuring**: Automatically parses and structures extracted coordinates into downloadable CSV format
+- 🎛️ **Configurable Settings**: Adjustable DPI and contrast threshold for different document qualities
+- 🌐 **Web-Based Interface**: User-friendly Streamlit application accessible through any web browser
+- 🗺️ **Projection Detection**: Identifies hidden projection information (e.g., WGS1984 UTM18S) within PDF files
+- 🔄 **Multi-Page Support**: Processes multi-page PDF documents with page selection capability
 
+### Usage Instructions
+
+#### Prerequisites
+
+Before running the application, ensure you have the following installed:
+
+- Python 3.7 or higher
+- Tesseract OCR engine
+- Poppler utilities (for PDF processing)
+
+#### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/nicofierrov/extractor-mapas.git
+   cd extractor-mapas
+   ```
+
+2. **Install Python dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Install system packages** (Linux/Ubuntu):
+   ```bash
+   sudo apt-get update
+   sudo apt-get install tesseract-ocr tesseract-ocr-spa libgl1 poppler-utils
+   ```
+
+   For other operating systems:
+   - **macOS**: `brew install tesseract poppler`
+   - **Windows**: Download and install [Tesseract](https://github.com/UB-Mannheim/tesseract/wiki) and [Poppler](http://blog.alivate.com.au/poppler-windows/)
+
+#### Running the Application
+
+1. **Start the Streamlit application**:
+   ```bash
+   streamlit run app.py
+   ```
+
+2. **Access the web interface**:
+   - The application will automatically open in your default browser
+   - If not, navigate to `http://localhost:8501`
+
+#### How to Use
+
+1. **Upload a file**: 
+   - Click "Sube tu archivo" (Upload your file)
+   - Select a PDF or image file (PNG, JPG, JPEG) containing a coordinate table
+   
+2. **Configure settings** (optional):
+   - Adjust **DPI** (200-500): Higher values improve accuracy for small text but increase processing time
+   - Adjust **Contrast Filter** (0-255): Fine-tune to reduce background noise
+
+3. **Process the document**:
+   - If multi-page PDF, select the page containing the coordinate table
+   - Review the preprocessed image to ensure the table is visible
+   - Click "🔍 Extraer Coordenadas con IA" to extract coordinates
+
+4. **Download results**:
+   - Review the extracted coordinate table
+   - Download as CSV for use in GIS software (QGIS, ArcGIS, etc.)
+
+#### Example Input/Output
+
+**Input**: PDF or image file containing a table like:
+
+```
+Vértice    Este         Norte
+1          675123.45    5234567.89
+2          675234.56    5234678.90
+3          675345.67    5234789.01
+```
+
+**Output**: Structured CSV file:
+
+```csv
+Vértice,Este,Norte,Texto_Original
+1,675123,5234567,"1    675123.45    5234567.89"
+2,675234,5234678,"2    675234.56    5234678.90"
+3,675345,5234789,"3    675345.67    5234789.01"
+```
+
+### Dependencies and Technologies
+
+#### Python Libraries
+
+- **streamlit**: Web application framework for the user interface
+- **pdf2image**: Converts PDF documents to images for processing
+- **pytesseract**: Python wrapper for Google's Tesseract OCR engine
+- **opencv-python-headless**: Computer vision library for image preprocessing
+- **pandas**: Data manipulation and CSV export functionality
+- **numpy**: Numerical computing for image array operations
+- **pillow**: Python Imaging Library for image handling
+
+#### System Dependencies
+
+- **Tesseract OCR** (v4.0+): Open-source OCR engine
+- **Tesseract Spanish Language Pack**: For improved Spanish text recognition
+- **Poppler Utils**: PDF rendering library
+- **OpenGL Libraries** (libgl1): Required for OpenCV operations
+
+#### Related Technologies
+
+- **QGIS**: The source PDFs are typically generated using QGIS (Quantum GIS)
+- **WGS1984 UTM18S**: Standard coordinate reference system for Isla Grande de Chiloé region
+
+### Limitations and Demo Version
+
+#### Demo Version Notice
+
+⚠️ **This is a demonstration version.** The full production version of this tool is not publicly available.
+
+#### Known Limitations
+
+1. **PDF Compatibility**:
+   - Designed specifically for PDFs generated by DOH using QGIS
+   - May not work correctly with PDFs from other sources or with different layouts
+   - Best results with "flat" (non-layered) PDF documents
+
+2. **OCR Accuracy**:
+   - Partially digitized PDFs may require manual verification
+   - OCR accuracy depends on image quality and document contrast
+   - Small text or low-resolution scans may produce errors
+
+3. **Projection Detection**:
+   - Hidden projection information (e.g., white text on white background) may not always be detected
+   - Manual verification of coordinate reference system is recommended
+   - Default assumption is WGS1984 UTM18S for Chiloé region
+
+4. **Processing Speed**:
+   - High DPI settings (>300) may result in slower processing times
+   - Large multi-page PDF files require more processing time
+
+5. **Coordinate Format**:
+   - Optimized for Chilean UTM coordinate formats (6-7 digit coordinates)
+   - May require adjustment for other coordinate systems or formats
+
+#### Recommendations
+
+- Always verify extracted coordinates before using them in production systems
+- Test with a small sample of your documents first
+- Adjust DPI and contrast settings based on your specific document quality
+- For critical applications, consider manual verification of results
+
+### License
+
+This project is currently unlicensed. Please contact the repository owner for usage permissions and licensing information.
+
+---
 ---
 
 ## Español
 
-### Versión de Demostración
-La versión final de esta herramienta no es pública.
+### Introducción
 
-### Sobre la Herramienta
-Esta herramienta fue desarrollada para automatizar la extracción de información geoespacial de archivos PDF planos *generados* y enviados por la Dirección de Obras Hidráulicas (DOH). Identifica las áreas de servicios de Servicios Sanitarios Rurales (SSR), estanques y otros elementos del sistema.
+**Extractor-Mapas** es una herramienta automatizada diseñada para extraer información geoespacial de mapas PDF planos utilizando técnicas de Reconocimiento Óptico de Caracteres (OCR) y visión artificial. Esta herramienta fue desarrollada específicamente para procesar mapas generados y distribuidos por la Dirección de Obras Hidráulicas (DOH) para Servicios Sanitarios Rurales (SSR) en Chile.
 
-La herramienta localiza la tabla de vértices (o puntos) y realiza un OCR en la zona si es necesario debido a que los archivos PDF están parcialmente digitalizados. Además, busca la proyección en los archivos, la cual muchas veces está oculta a simple vista (por ejemplo, escrita en letras blancas sobre fondo blanco). Generalmente, se utiliza la proyección WGS1984 UTM18S para la Isla Grande de Chiloé, pero debido a las inconsistencias en los datos, cada caso debe ser verificado individualmente.
+#### Características Principales
 
-Estos PDF planos fueron generados en QGIS y enviados por la DOH.
+- 🔍 **Extracción Automatizada de Coordenadas**: Utiliza tecnología OCR para detectar y extraer tablas de coordenadas UTM de documentos PDF e imágenes
+- 🖼️ **Procesamiento de Imágenes**: Convierte PDFs a imágenes y aplica preprocesamiento avanzado para un reconocimiento óptimo de texto
+- 📊 **Estructuración de Datos**: Analiza y estructura automáticamente las coordenadas extraídas en formato CSV descargable
+- 🎛️ **Configuración Ajustable**: DPI y umbral de contraste ajustables para diferentes calidades de documento
+- 🌐 **Interfaz Web**: Aplicación Streamlit fácil de usar accesible desde cualquier navegador web
+- 🗺️ **Detección de Proyección**: Identifica información de proyección oculta (ej. WGS1984 UTM18S) dentro de archivos PDF
+- 🔄 **Soporte Multi-Página**: Procesa documentos PDF de múltiples páginas con capacidad de selección de página
+
+### Instrucciones de Uso
+
+#### Requisitos Previos
+
+Antes de ejecutar la aplicación, asegúrese de tener instalado lo siguiente:
+
+- Python 3.7 o superior
+- Motor OCR Tesseract
+- Utilidades Poppler (para procesamiento de PDF)
+
+#### Instalación
+
+1. **Clonar el repositorio**:
+   ```bash
+   git clone https://github.com/nicofierrov/extractor-mapas.git
+   cd extractor-mapas
+   ```
+
+2. **Instalar dependencias de Python**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Instalar paquetes del sistema** (Linux/Ubuntu):
+   ```bash
+   sudo apt-get update
+   sudo apt-get install tesseract-ocr tesseract-ocr-spa libgl1 poppler-utils
+   ```
+
+   Para otros sistemas operativos:
+   - **macOS**: `brew install tesseract poppler`
+   - **Windows**: Descargar e instalar [Tesseract](https://github.com/UB-Mannheim/tesseract/wiki) y [Poppler](http://blog.alivate.com.au/poppler-windows/)
+
+#### Ejecutar la Aplicación
+
+1. **Iniciar la aplicación Streamlit**:
+   ```bash
+   streamlit run app.py
+   ```
+
+2. **Acceder a la interfaz web**:
+   - La aplicación se abrirá automáticamente en su navegador predeterminado
+   - Si no, navegue a `http://localhost:8501`
+
+#### Cómo Usar
+
+1. **Subir un archivo**: 
+   - Haga clic en "Sube tu archivo"
+   - Seleccione un archivo PDF o imagen (PNG, JPG, JPEG) que contenga una tabla de coordenadas
+   
+2. **Configurar ajustes** (opcional):
+   - Ajuste el **DPI** (200-500): Valores más altos mejoran la precisión para texto pequeño pero aumentan el tiempo de procesamiento
+   - Ajuste el **Filtro de Contraste** (0-255): Ajuste fino para reducir el ruido de fondo
+
+3. **Procesar el documento**:
+   - Si es un PDF de múltiples páginas, seleccione la página que contiene la tabla de coordenadas
+   - Revise la imagen preprocesada para asegurar que la tabla sea visible
+   - Haga clic en "🔍 Extraer Coordenadas con IA" para extraer coordenadas
+
+4. **Descargar resultados**:
+   - Revise la tabla de coordenadas extraídas
+   - Descargue como CSV para usar en software GIS (QGIS, ArcGIS, etc.)
+
+#### Ejemplo de Entrada/Salida
+
+**Entrada**: Archivo PDF o imagen que contenga una tabla como:
+
+```
+Vértice    Este         Norte
+1          675123.45    5234567.89
+2          675234.56    5234678.90
+3          675345.67    5234789.01
+```
+
+**Salida**: Archivo CSV estructurado:
+
+```csv
+Vértice,Este,Norte,Texto_Original
+1,675123,5234567,"1    675123.45    5234567.89"
+2,675234,5234678,"2    675234.56    5234678.90"
+3,675345,5234789,"3    675345.67    5234789.01"
+```
+
+### Dependencias y Tecnologías
+
+#### Librerías Python
+
+- **streamlit**: Framework de aplicaciones web para la interfaz de usuario
+- **pdf2image**: Convierte documentos PDF a imágenes para procesamiento
+- **pytesseract**: Wrapper de Python para el motor OCR Tesseract de Google
+- **opencv-python-headless**: Librería de visión artificial para preprocesamiento de imágenes
+- **pandas**: Funcionalidad de manipulación de datos y exportación a CSV
+- **numpy**: Computación numérica para operaciones con arrays de imágenes
+- **pillow**: Python Imaging Library para manejo de imágenes
+
+#### Dependencias del Sistema
+
+- **Tesseract OCR** (v4.0+): Motor OCR de código abierto
+- **Paquete de Idioma Español Tesseract**: Para mejorar el reconocimiento de texto en español
+- **Poppler Utils**: Librería de renderizado de PDF
+- **Librerías OpenGL** (libgl1): Requeridas para operaciones de OpenCV
+
+#### Tecnologías Relacionadas
+
+- **QGIS**: Los PDFs de origen típicamente son generados usando QGIS (Quantum GIS)
+- **WGS1984 UTM18S**: Sistema de referencia de coordenadas estándar para la región de Isla Grande de Chiloé
+
+### Limitaciones y Versión de Demostración
+
+#### Aviso de Versión de Demostración
+
+⚠️ **Esta es una versión de demostración.** La versión de producción completa de esta herramienta no está disponible públicamente.
+
+#### Limitaciones Conocidas
+
+1. **Compatibilidad de PDF**:
+   - Diseñado específicamente para PDFs generados por DOH usando QGIS
+   - Puede no funcionar correctamente con PDFs de otras fuentes o con diseños diferentes
+   - Mejores resultados con documentos PDF "planos" (sin capas)
+
+2. **Precisión del OCR**:
+   - PDFs parcialmente digitalizados pueden requerir verificación manual
+   - La precisión del OCR depende de la calidad de la imagen y el contraste del documento
+   - Texto pequeño o escaneos de baja resolución pueden producir errores
+
+3. **Detección de Proyección**:
+   - Información de proyección oculta (ej. texto blanco sobre fondo blanco) puede no ser siempre detectada
+   - Se recomienda verificación manual del sistema de referencia de coordenadas
+   - La suposición predeterminada es WGS1984 UTM18S para la región de Chiloé
+
+4. **Velocidad de Procesamiento**:
+   - Configuraciones de DPI altas (>300) pueden resultar en tiempos de procesamiento más lentos
+   - Archivos PDF grandes de múltiples páginas requieren más tiempo de procesamiento
+
+5. **Formato de Coordenadas**:
+   - Optimizado para formatos de coordenadas UTM chilenas (coordenadas de 6-7 dígitos)
+   - Puede requerir ajustes para otros sistemas o formatos de coordenadas
+
+#### Recomendaciones
+
+- Siempre verifique las coordenadas extraídas antes de usarlas en sistemas de producción
+- Pruebe primero con una muestra pequeña de sus documentos
+- Ajuste la configuración de DPI y contraste según la calidad específica de su documento
+- Para aplicaciones críticas, considere la verificación manual de los resultados
+
+### Licencia
+
+Este proyecto actualmente no tiene licencia. Por favor, contacte al propietario del repositorio para obtener permisos de uso e información sobre licencias.
